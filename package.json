@@ -1,6 +1,6 @@
 {
-    "name": "brackets-viewer",
-    "version": "1.6.2",
+    "name": "@ewanmellor/brackets-viewer",
+    "version": "1.6.903",
     "description": "A simple library to display tournament brackets (round-robin, single elimination, double elimination)",
     "files": [
         "dist/"
@@ -17,7 +17,10 @@
     },
     "repository": {
         "type": "git",
-        "url": "git+https://github.com/Drarig29/brackets-viewer.js.git"
+        "url": "git+https://github.com/ewanmellor/brackets-viewer.js.git"
+    },
+    "publishConfig": {
+        "registry": "https://npm.pkg.github.com/"
     },
     "keywords": [
         "javascript",
@@ -26,7 +29,7 @@
         "viewer",
         "display"
     ],
-    "author": "Corentin Girard",
+    "author": "Corentin Girard with modifications by All Ball, LLC",
     "license": "ISC",
     "bugs": {
         "url": "https://github.com/Drarig29/brackets-viewer.js/issues"
