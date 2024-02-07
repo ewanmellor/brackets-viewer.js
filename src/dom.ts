@@ -119,8 +119,10 @@ export function createRoundContainer(roundId: Id, title: string): HTMLElement {
  * Creates a container which contains a match.
  *
  * @param match A match or a match game.
+ * @param classList Optional extra classes to be added.
+ * @param style Optional extra style to be set.
  */
-export function createMatchContainer(match?: Match | MatchGame): HTMLElement {
+export function createMatchContainer(match?: Match | MatchGame, classList: string | string[] | null = null, style?: Partial<CSSStyleDeclaration>): HTMLElement {
     const div = document.createElement('div');
     div.classList.add('match');
 
@@ -132,6 +134,8 @@ export function createMatchContainer(match?: Match | MatchGame): HTMLElement {
 
         div.setAttribute('data-match-status', match.status.toString());
     }
+
+    addExtraStyles(div, classList, style);
 
     return div;
 }
@@ -167,12 +171,17 @@ export function createChildCountLabel(label: string, onClick?: (event: MouseEven
 /**
  * Creates a container which contains the opponents of a match.
  *
+ * @param classList Optional extra classes to be added.
+ * @param style Optional extra style to be set.
  * @param onClick Called when the match is clicked.
  */
-export function createOpponentsContainer(onClick?: () => void): HTMLElement {
+export function createOpponentsContainer(classList: string | string[] | null = null, style?: Partial<CSSStyleDeclaration>, onClick?: () => void): HTMLElement {
     const opponents = document.createElement('div');
     opponents.classList.add('opponents');
     onClick && opponents.addEventListener('click', onClick);
+
+    addExtraStyles(opponents, classList, style);
+
     return opponents;
 }
 
@@ -180,13 +189,17 @@ export function createOpponentsContainer(onClick?: () => void): HTMLElement {
  * Creates a container which contains a participant.
  *
  * @param participantId ID of the participant.
+ * @param classList Optional extra classes to be added.
+ * @param style Optional extra style to be set.
  */
-export function createParticipantContainer(participantId: Id | null): HTMLElement {
+export function createParticipantContainer(participantId: Id | null, classList: string | string[] | null = null, style?: Partial<CSSStyleDeclaration>): HTMLElement {
     const participant = document.createElement('div');
     participant.classList.add('participant');
 
     if (participantId !== null && participantId !== undefined)
         participant.setAttribute('data-participant-id', participantId.toString());
+
+    addExtraStyles(participant, classList, style);
 
     return participant;
 }
@@ -207,6 +220,29 @@ export function createResultContainer(): HTMLElement {
     const result = document.createElement('div');
     result.classList.add('result');
     return result;
+}
+
+/**
+ * Add the given extra CSS classes and styles to the given element.
+ *
+ * @param el The element.
+ * @param classList Optional extra classes to be added.
+ * @param style Optional extra style to be set.
+ */
+function addExtraStyles(el: HTMLElement, classList: string | string[] | null = null, style?: Partial<CSSStyleDeclaration>): void {
+    if (Array.isArray(classList)) {
+        for (const cls of classList)
+            el.classList.add(cls);
+    } else if (classList)
+        el.classList.add(classList);
+
+    if (style) {
+        for (const k in style) {
+            const v = style[k];
+            if (v)
+                el.style[k] = v;
+        }
+    }
 }
 
 /**

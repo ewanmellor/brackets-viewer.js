@@ -107,6 +107,8 @@ export type Placement = 'none' | 'before' | 'after';
  */
 export type Side = 'opponent1' | 'opponent2';
 
+export type ExtraStyle = { classList?: string | string[], style?: Partial<CSSStyleDeclaration> };
+
 /**
  * An optional config to provide to `brackets-viewer.js`
  */
@@ -126,6 +128,11 @@ export interface Config {
      * If you just want to **translate some words**, please use `addLocale()` instead.
      */
     customRoundName?: (...args: Parameters<RoundNameGetter>) => ReturnType<RoundNameGetter> | undefined,
+
+    /**
+     * Optional callback to provide CSS classes and / or styles for each match.
+     */
+    getStyleForMatch?: (match: Match | MatchGame) => { match?: ExtraStyle, opponents?: ExtraStyle, participant1?: ExtraStyle, participant2?: ExtraStyle } | undefined,
 
     /**
      * An optional selector to select the root element.
