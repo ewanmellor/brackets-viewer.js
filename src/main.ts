@@ -7,6 +7,7 @@ import { Locale } from './lang';
 import { helpers } from 'brackets-manager';
 import {
     Config,
+    ExtraStyle,
     OriginHint,
     ParticipantContainers,
     RankingItem,
@@ -77,6 +78,7 @@ export class BracketsViewer {
             showPopoverOnMatchLabelClick: config?.showPopoverOnMatchLabelClick ?? true,
             highlightParticipantOnHover: config?.highlightParticipantOnHover ?? true,
             showRankingTable: config?.showRankingTable ?? true,
+            getStyleForMatch: config?.getStyleForMatch,
         };
 
         if (config?.onMatchClick)
@@ -600,10 +602,13 @@ export class BracketsViewer {
      * @param propagateHighlight Whether to highlight participants in other matches.
      */
     private createMatch(match: MatchWithMetadata | MatchGameWithMetadata, propagateHighlight: boolean): HTMLElement {
-        const matchContainer = dom.createMatchContainer(match);
+        const { match: matchStyles, opponents: opponentsStyles, participant1: participant1Styles, participant2: participant2Styles } = this.config.getStyleForMatch?.(match) || {};
+        const { classList: matchClassList, style: matchStyle } = matchStyles || {};
+        const { classList: opponentsClassList, style: opponentsStyle } = opponentsStyles || {};
+        const matchContainer = dom.createMatchContainer(match, matchClassList, matchStyle);
         const opponents = isMatch(match)
-            ? dom.createOpponentsContainer(() => this._onMatchClick(match))
-            : dom.createOpponentsContainer();
+            ? dom.createOpponentsContainer(opponentsClassList, opponentsStyle, () => this._onMatchClick(match))
+            : dom.createOpponentsContainer(opponentsClassList, opponentsStyle);
 
         if (isMatch(match) && match.status >= Status.Completed)
             match.metadata.originHint = undefined;
@@ -611,14 +616,14 @@ export class BracketsViewer {
         if (isMatch(match)) {
             const { originHint, matchLocation, roundNumber } = match.metadata;
 
-            const participant1 = this.createParticipant(match.opponent1, propagateHighlight, 'opponent1', originHint, matchLocation, roundNumber);
-            const participant2 = this.createParticipant(match.opponent2, propagateHighlight, 'opponent2', originHint, matchLocation, roundNumber);
+            const participant1 = this.createParticipant(match.opponent1, propagateHighlight, 'opponent1', originHint, matchLocation, roundNumber, participant1Styles);
+            const participant2 = this.createParticipant(match.opponent2, propagateHighlight, 'opponent2', originHint, matchLocation, roundNumber, participant2Styles);
 
             this.renderMatchLabel(opponents, match);
             opponents.append(participant1, participant2);
         } else {
-            const participant1 = this.createParticipant(match.opponent1, propagateHighlight, 'opponent1');
-            const participant2 = this.createParticipant(match.opponent2, propagateHighlight, 'opponent2');
+            const participant1 = this.createParticipant(match.opponent1, propagateHighlight, 'opponent1', undefined, undefined, undefined, participant1Styles);
+            const participant2 = this.createParticipant(match.opponent2, propagateHighlight, 'opponent2', undefined, undefined, undefined, participant2Styles);
 
             this.renderMatchLabel(opponents, match);
             opponents.append(participant1, participant2);
@@ -645,10 +650,12 @@ export class BracketsViewer {
      * @param originHint Origin hint for the match.
      * @param matchLocation Location of the match.
      * @param roundNumber Number of the round.
+     * @param extraStyles Optional extra CSS classes and styles to add to the result.
      */
-    private createParticipant(participant: ParticipantResult | null, propagateHighlight: boolean, side?: Side, originHint?: OriginHint, matchLocation?: GroupType, roundNumber?: number): HTMLElement {
+    private createParticipant(participant: ParticipantResult | null, propagateHighlight: boolean, side?: Side, originHint?: OriginHint, matchLocation?: GroupType, roundNumber?: number, extraStyles?: ExtraStyle): HTMLElement {
+        const { classList, style } = extraStyles || {};
         const containers: ParticipantContainers = {
-            participant: dom.createParticipantContainer(participant && participant.id),
+            participant: dom.createParticipantContainer(participant && participant.id, classList, style),
             name: dom.createNameContainer(),
             result: dom.createResultContainer(),
         };
