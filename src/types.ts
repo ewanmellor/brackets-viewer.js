@@ -175,6 +175,12 @@ export interface Config {
     highlightParticipantOnHover?: boolean,
 
     /**
+     * Whether to do the same behavior as highlightParticipantOnHover, but
+     * for BYE / TBD placeholders.
+     */
+    highlightPlaceholdersOnHover?: boolean,
+
+    /**
      * Whether to show a ranking table on round-robin stages.
      */
     showRankingTable?: boolean,

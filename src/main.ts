@@ -77,6 +77,7 @@ export class BracketsViewer {
             showLowerBracketSlotsOrigin: config?.showLowerBracketSlotsOrigin ?? true,
             showPopoverOnMatchLabelClick: config?.showPopoverOnMatchLabelClick ?? true,
             highlightParticipantOnHover: config?.highlightParticipantOnHover ?? true,
+            highlightPlaceholdersOnHover: config?.highlightPlaceholdersOnHover ?? false,
             showRankingTable: config?.showRankingTable ?? true,
             getStyleForMatch: config?.getStyleForMatch,
         };
@@ -669,6 +670,8 @@ export class BracketsViewer {
 
         if (participant && participant.id !== null)
             this.setupMouseHover(participant.id, containers.participant, propagateHighlight);
+        else if (participant === null || participant === undefined)
+            this.setupPlaceholderMouseHover(containers.participant);
 
         return containers.participant;
     }
@@ -833,13 +836,7 @@ export class BracketsViewer {
         if (!this.config.highlightParticipantOnHover) return;
 
         const setupListeners = (elements: HTMLElement[]): void => {
-            element.addEventListener('mouseenter', () => {
-                elements.forEach(el => el.classList.add('hover'));
-            });
-
-            element.addEventListener('mouseleave', () => {
-                elements.forEach(el => el.classList.remove('hover'));
-            });
+            this.addHoverListeners(element, elements);
         };
 
         if (!propagateHighlight) {
@@ -853,6 +850,33 @@ export class BracketsViewer {
         refs.push(element);
 
         setupListeners(refs);
+    }
+
+    /**
+     * Sets mouse hover events for a placeholder (BYE or TBD).
+     *
+     * @param element The dom element to add events to.
+     */
+    private setupPlaceholderMouseHover(element: HTMLElement): void {
+        if (!this.config.highlightPlaceholdersOnHover) return;
+
+        this.addHoverListeners(element, [element]);
+    }
+
+    /**
+     * Add mouse hover events.
+     *
+     * @param targetEl The element that is being hovered over.
+     * @param highlightableEls The elements that should be highlighted.
+     */
+    private addHoverListeners(targetEl: HTMLElement, highlightableEls: HTMLElement[]): void {
+        targetEl.addEventListener('mouseenter', () => {
+            highlightableEls.forEach(el => el.classList.add('hover'));
+        });
+
+        targetEl.addEventListener('mouseleave', () => {
+            highlightableEls.forEach(el => el.classList.remove('hover'));
+        });
     }
 
     /**
