@@ -396,7 +396,7 @@ export class BracketsViewer {
     private renderBracket(container: HTMLElement, matchesByRound: MatchWithMetadata[][], getRoundName: RoundNameGetter, bracketType: GroupType, connectFinal?: boolean): void {
         const groupId = matchesByRound[0][0].group_id;
         const roundCount = matchesByRound.length;
-        const bracketContainer = dom.createBracketContainer(groupId, lang.getBracketName(this.stage, bracketType));
+        const bracketContainer = dom.createBracketContainer(groupId, lang.getBracketName(this.stage, bracketType), roundCount);
         const roundsContainer = dom.createRoundsContainer();
 
         const { matches: completedMatches, fromToornament } = completeWithBlankMatches(bracketType, matchesByRound[0], matchesByRound[1]);
