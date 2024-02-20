@@ -296,11 +296,14 @@ export function createRankingHeaders(ranking: Ranking): HTMLElement {
  *
  * @param nameContainer The name container.
  * @param hint The hint to set.
+ * @param withoutTitle True to not add the title to the element (i.e. the
+ * browser-driven tooltip).
  */
-export function setupHint(nameContainer: HTMLElement, hint: string): void {
+export function setupHint(nameContainer: HTMLElement, hint: string, withoutTitle = false): void {
     nameContainer.classList.add('hint');
     nameContainer.innerText = hint;
-    nameContainer.title = hint;
+    if (!withoutTitle)
+        nameContainer.title = hint;
 }
 
 /**
