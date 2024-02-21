@@ -54,10 +54,14 @@ export function createEliminationContainer(stageId: Id): HTMLElement {
  *
  * @param groupId ID of the group.
  * @param title Title of the group.
+ * @param roundCount The number of rounds in this container. This is added as a dataset
+ * key 'round-count' so that it can be targeted with CSS.
  */
-export function createBracketContainer(groupId?: Id, title?: string): HTMLElement {
+export function createBracketContainer(groupId?: Id, title?: string, roundCount?: number): HTMLElement {
     const bracket = document.createElement('section');
     bracket.classList.add('bracket');
+    if (roundCount)
+        bracket.setAttribute('data-round-count', roundCount.toString());
 
     // Consolation matches are not in a group.
     if (groupId)
