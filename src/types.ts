@@ -189,6 +189,13 @@ export interface Config {
      * Whether to clear any previously displayed data.
      */
     clear?: boolean
+
+    /**
+     * True to not add the title to the participant elements (i.e. the
+     * browser-driven tooltips).  This applies to both the real and
+     * the placeholder (hint) participant display.
+     */
+    noParticipantTitles?: boolean
 }
 
 /**

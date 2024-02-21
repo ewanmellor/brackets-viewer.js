@@ -80,6 +80,7 @@ export class BracketsViewer {
             highlightPlaceholdersOnHover: config?.highlightPlaceholdersOnHover ?? false,
             showRankingTable: config?.showRankingTable ?? true,
             getStyleForMatch: config?.getStyleForMatch,
+            noParticipantTitles: config?.noParticipantTitles,
         };
 
         if (config?.onMatchClick)
@@ -691,7 +692,8 @@ export class BracketsViewer {
 
         if (found) {
             containers.name.innerText = found.name;
-            containers.participant.setAttribute('title', found.name);
+            if (!this.config.noParticipantTitles)
+                containers.participant.setAttribute('title', found.name);
             this.renderParticipantImage(containers.name, found.id);
             this.renderParticipantOrigin(containers.name, participant, side, matchLocation, roundNumber);
         } else
@@ -800,7 +802,7 @@ export class BracketsViewer {
         if (!this.config.showSlotsOrigin) return;
         if (!this.config.showLowerBracketSlotsOrigin && matchLocation === 'loser_bracket') return;
 
-        dom.setupHint(nameContainer, originHint(participant.position));
+        dom.setupHint(nameContainer, originHint(participant.position), this.config.noParticipantTitles);
     }
 
     /**
