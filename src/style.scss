@@ -331,7 +331,7 @@
       }
 
       // Participant name
-      & > span {
+      & > .origin {
         color: var(--hint-color);
         font-size: 0.9em;
         font-weight: initial;

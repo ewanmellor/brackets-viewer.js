@@ -364,6 +364,7 @@ export function setupLoss(participantContainer: HTMLElement, resultContainer: HT
  */
 export function addParticipantOrigin(nameContainer: HTMLElement, text: string, placement: Placement): void {
     const span = document.createElement('span');
+    span.classList.add('origin');
 
     if (placement === 'before') {
         span.innerText = `${text} `;

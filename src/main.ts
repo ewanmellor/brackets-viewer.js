@@ -723,11 +723,14 @@ export class BracketsViewer {
         const found = this.participants.find(item => item.id === participant.id);
 
         if (found) {
-            containers.name.innerText = found.name;
             if (!this.config.noParticipantTitles)
                 containers.participant.setAttribute('title', found.name);
             this.renderParticipantImage(containers.name, found.id);
             this.renderParticipantOrigin(containers.name, participant, side, matchLocation, roundNumber);
+            const nameEl = document.createElement('span');
+            nameEl.classList.add('innerName');
+            nameEl.innerText = found.name;
+            containers.name.appendChild(nameEl);
         } else
             this.renderHint(containers.name, participant, originHint, matchLocation);
 
