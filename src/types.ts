@@ -123,6 +123,10 @@ export interface Config {
      */
     onMatchLabelClick?: MatchClickCallback;
 
+    customMatchLabel?: (...args: Parameters<MatchLabelGetter>) => ReturnType<MatchLabelGetter> | undefined,
+
+    customFinalMatchLabel?: (...args: Parameters<FinalMatchLabelGetter>) => ReturnType<FinalMatchLabelGetter> | undefined,
+
     /**
      * A function to deeply customize the names of the rounds.
      * If you just want to **translate some words**, please use `addLocale()` instead.
@@ -229,6 +233,22 @@ export type RoundNameInfo = {
     roundNumber: number,
     roundCount: number,
 };
+
+export type FinalMatchInfo = {
+    finalType: FinalType,
+    roundNumber: number,
+    roundCount: number,
+};
+
+/**
+ * A function returning a match label.
+ */
+export type MatchLabelGetter = (info: MatchWithMetadata, t: Translator, origName: string) => string;
+
+/**
+ * A function returning a label for a final.
+ */
+export type FinalMatchLabelGetter = (info: FinalMatchInfo, t: Translator, origName: string) => string;
 
 /**
  * A function returning a round name based on its number and the count of rounds.

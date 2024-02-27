@@ -70,6 +70,8 @@ export class BracketsViewer {
         const root = document.createDocumentFragment();
 
         this.config = {
+            customMatchLabel: config?.customMatchLabel,
+            customFinalMatchLabel: config?.customFinalMatchLabel,
             customRoundName: config?.customRoundName,
             participantOriginPlacement: config?.participantOriginPlacement ?? 'before',
             separatedChildCountLabel: config?.separatedChildCountLabel ?? false,
@@ -456,7 +458,7 @@ export class BracketsViewer {
         const finalMatches = matches.slice(0, displayCount);
         const roundCount = finalMatches.length;
 
-        const defaultFinalRoundNameGetter: RoundNameGetter = ({ roundNumber, roundCount }) => lang.getFinalMatchLabel(finalType, roundNumber, roundCount);
+        const defaultFinalRoundNameGetter: RoundNameGetter = ({ roundNumber, roundCount }) => this.getFinalMatchLabel(finalType, roundNumber, roundCount);
 
         for (let roundIndex = 0; roundIndex < finalMatches.length; roundIndex++) {
             const roundNumber = roundIndex + 1;
@@ -547,7 +549,7 @@ export class BracketsViewer {
             throw Error(`The match's internal data is missing roundNumber, roundCount or matchLocation: ${JSON.stringify(match)}`);
 
         const connection = dom.getBracketConnection(this.alwaysConnectFirstRound, roundNumber, roundCount, match, matchLocation, connectFinal);
-        const matchLabel = lang.getMatchLabel(match.number, roundNumber, roundCount, matchLocation);
+        const matchLabel = this.getMatchLabel(match);
         const originHint = lang.getOriginHint(roundNumber, roundCount, this.skipFirstRound, matchLocation);
 
         match.metadata.connection = connection;
@@ -570,7 +572,7 @@ export class BracketsViewer {
             throw Error(`The match's internal data is missing roundNumber or roundCount: ${JSON.stringify(match)}`);
 
         const connection = dom.getFinalConnection(finalType, roundNumber, roundCount);
-        const matchLabel = lang.getFinalMatchLabel(finalType, roundNumber, roundCount);
+        const matchLabel = this.getFinalMatchLabel(finalType, roundNumber, roundCount);
         const originHint = lang.getFinalOriginHint(match.metadata.stageType, finalType, roundNumber);
 
         match.metadata.connection = connection;
@@ -578,6 +580,36 @@ export class BracketsViewer {
         match.metadata.originHint = originHint;
 
         return this.createMatch(match, true);
+    }
+
+    /**
+     * Gets the label for the match, starting from our i18n database and
+     * calling `this.config.customMatchLabel`, if that has been set.
+     *
+     * @param match Information about the match.
+     */
+    private getMatchLabel(match: MatchWithMetadata): string {
+        const { roundNumber, roundCount, matchLocation } = match.metadata;
+        const matchLabel = lang.getMatchLabel(match.number, roundNumber, roundCount, matchLocation);
+        const customMatchLabel = this.config.customMatchLabel;
+        return customMatchLabel ? customMatchLabel(match, lang.t, matchLabel) || matchLabel : matchLabel;
+    }
+
+    /**
+     * Gets the label for the final, starting from our i18n database and
+     * calling `this.config.customFinalMatchLabel`, if that has been set.
+     *
+     * @param finalType Type of the final.
+     * @param roundNumber Number of the round.
+     * @param roundCount Count of rounds.
+     */
+    private getFinalMatchLabel(finalType: FinalType, roundNumber: number, roundCount: number): string {
+        const matchLabel = lang.getFinalMatchLabel(finalType, roundNumber, roundCount);
+        const customFinalMatchLabel = this.config.customFinalMatchLabel;
+        const info = {
+            finalType, roundNumber, roundCount,
+        };
+        return customFinalMatchLabel ? customFinalMatchLabel(info, lang.t, matchLabel) || matchLabel : matchLabel;
     }
 
     /**
@@ -766,9 +798,7 @@ export class BracketsViewer {
     private showPopover(match: MatchWithMetadata): void {
         this.popover.innerText = '';
 
-        const { roundNumber, roundCount, matchLocation } = match.metadata;
-
-        const matchLabel = lang.getMatchLabel(match.number, roundNumber, roundCount, matchLocation);
+        const matchLabel = this.getMatchLabel(match);
         const popoverTitle = dom.createPopoverTitle(matchLabel);
         this.popover.append(popoverTitle);
 
