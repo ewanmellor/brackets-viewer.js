@@ -234,12 +234,6 @@ export type RoundNameInfo = {
     roundCount: number,
 };
 
-export type FinalMatchInfo = {
-    finalType: FinalType,
-    roundNumber: number,
-    roundCount: number,
-};
-
 /**
  * A function returning a match label.
  */
@@ -248,7 +242,7 @@ export type MatchLabelGetter = (info: MatchWithMetadata, t: Translator, origName
 /**
  * A function returning a label for a final.
  */
-export type FinalMatchLabelGetter = (info: FinalMatchInfo, t: Translator, origName: string) => string;
+export type FinalMatchLabelGetter = (finalType: FinalType, info: MatchWithMetadata, t: Translator, origName: string) => string;
 
 /**
  * A function returning a round name based on its number and the count of rounds.

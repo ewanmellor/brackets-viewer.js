@@ -458,7 +458,7 @@ export class BracketsViewer {
         const finalMatches = matches.slice(0, displayCount);
         const roundCount = finalMatches.length;
 
-        const defaultFinalRoundNameGetter: RoundNameGetter = ({ roundNumber, roundCount }) => this.getFinalMatchLabel(finalType, roundNumber, roundCount);
+        const defaultFinalRoundNameGetter: RoundNameGetter = ({ roundNumber }) => this.getFinalMatchLabel(finalType, finalMatches[roundNumber - 1]);
 
         for (let roundIndex = 0; roundIndex < finalMatches.length; roundIndex++) {
             const roundNumber = roundIndex + 1;
@@ -572,7 +572,7 @@ export class BracketsViewer {
             throw Error(`The match's internal data is missing roundNumber or roundCount: ${JSON.stringify(match)}`);
 
         const connection = dom.getFinalConnection(finalType, roundNumber, roundCount);
-        const matchLabel = this.getFinalMatchLabel(finalType, roundNumber, roundCount);
+        const matchLabel = this.getFinalMatchLabel(finalType, match);
         const originHint = lang.getFinalOriginHint(match.metadata.stageType, finalType, roundNumber);
 
         match.metadata.connection = connection;
@@ -600,16 +600,13 @@ export class BracketsViewer {
      * calling `this.config.customFinalMatchLabel`, if that has been set.
      *
      * @param finalType Type of the final.
-     * @param roundNumber Number of the round.
-     * @param roundCount Count of rounds.
+     * @param match Information about the match.
      */
-    private getFinalMatchLabel(finalType: FinalType, roundNumber: number, roundCount: number): string {
-        const matchLabel = lang.getFinalMatchLabel(finalType, roundNumber, roundCount);
+    private getFinalMatchLabel(finalType: FinalType, match: MatchWithMetadata): string {
+        const { roundNumber , roundCount } = match.metadata;
+        const matchLabel = lang.getFinalMatchLabel(finalType, roundNumber!, roundCount!);
         const customFinalMatchLabel = this.config.customFinalMatchLabel;
-        const info = {
-            finalType, roundNumber, roundCount,
-        };
-        return customFinalMatchLabel ? customFinalMatchLabel(info, lang.t, matchLabel) || matchLabel : matchLabel;
+        return customFinalMatchLabel ? customFinalMatchLabel(finalType, match, lang.t, matchLabel) || matchLabel : matchLabel;
     }
 
     /**
